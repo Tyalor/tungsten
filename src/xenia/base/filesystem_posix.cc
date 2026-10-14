@@ -86,6 +86,17 @@ std::filesystem::path GetUserFolder() {
     return std::string(home);
   }
 
+#if XE_PLATFORM_MAC
+  // macOS convention: per-user app data lives in ~/Library/Application Support,
+  // not in the XDG ~/.local/share tree. The caller appends the app folder name.
+  // XDG_DATA_HOME above still wins when set explicitly, so Unix-style setups
+  // keep working.
+  home = std::getenv("HOME");
+  if (home && *home) {
+    return std::filesystem::path(home) / "Library" / "Application Support";
+  }
+#endif  // XE_PLATFORM_MAC
+
   // if XDG_DATA_HOME not set, fallback to HOME directory
   home = std::getenv("HOME");
 

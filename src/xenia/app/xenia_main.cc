@@ -526,6 +526,46 @@ std::vector<std::unique_ptr<hid::InputDriver>> EmulatorApp::CreateInputDrivers(
   return drivers;
 }
 
+#if XE_PLATFORM_MAC
+// Earlier macOS builds stored data under the XDG path ~/.local/share/Xenia.
+// The storage root now follows the platform convention, ~/Library/Application
+// Support/Xenia. Move an existing legacy folder across once so configs, saves
+// and caches are not silently abandoned. If the move cannot happen (different
+// volume, permissions, or a new folder already exists next to a legacy one)
+// the legacy folder keeps being used, so nothing is ever lost.
+std::filesystem::path MigrateLegacyMacStorageRoot(
+    const std::filesystem::path& preferred_root) {
+  const char* home = std::getenv("HOME");
+  if (!home || !*home) {
+    return preferred_root;
+  }
+  std::filesystem::path legacy_root =
+      std::filesystem::path(home) / ".local" / "share" / "Xenia";
+  std::error_code ec;
+  if (!std::filesystem::is_directory(legacy_root, ec)) {
+    return preferred_root;
+  }
+  if (std::filesystem::exists(preferred_root, ec)) {
+    // Both exist: the user (or a newer build) already populated the preferred
+    // location. Prefer it, and say where the old data still is.
+    XELOGW(
+        "Storage root: both {} and legacy {} exist; using the former. Merge or "
+        "delete the legacy folder by hand.",
+        preferred_root, legacy_root);
+    return preferred_root;
+  }
+  std::filesystem::create_directories(preferred_root.parent_path(), ec);
+  std::filesystem::rename(legacy_root, preferred_root, ec);
+  if (ec) {
+    XELOGW("Storage root: could not move legacy {} to {} ({}); keeping legacy",
+           legacy_root, preferred_root, ec.message());
+    return legacy_root;
+  }
+  XELOGI("Storage root: moved legacy {} to {}", legacy_root, preferred_root);
+  return preferred_root;
+}
+#endif  // XE_PLATFORM_MAC
+
 bool EmulatorApp::OnInitialize() {
   Profiler::Initialize();
   Profiler::ThreadEnter("Main");
@@ -541,6 +581,9 @@ bool EmulatorApp::OnInitialize() {
       // TODO(Triang3l): Point to the app's external storage "files" directory.
 #else
       storage_root = storage_root / "Xenia";
+#endif
+#if XE_PLATFORM_MAC
+      storage_root = MigrateLegacyMacStorageRoot(storage_root);
 #endif
     }
   }
