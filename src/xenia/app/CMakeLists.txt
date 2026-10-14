@@ -206,8 +206,11 @@ xe_target_defaults(xenia-app)
 # resource is missing or invalid".
 if(APPLE)
   add_custom_command(TARGET xenia-app POST_BUILD
+    # Debug builds add get-task-allow so lldb can attach to the hardened
+    # runtime; every other configuration takes the release entitlements, since
+    # notarization rejects get-task-allow and it lets any process attach.
     COMMAND codesign --force --deep --sign -
-            --entitlements "${PROJECT_SOURCE_DIR}/xenia.entitlements"
+            --entitlements "$<IF:$<CONFIG:Debug>,${PROJECT_SOURCE_DIR}/xenia-debug.entitlements,${PROJECT_SOURCE_DIR}/xenia.entitlements>"
             "$<TARGET_BUNDLE_DIR:xenia-app>"
     # Strip macos-26 provenance/macl xattrs so AMFI on macOS 15 accepts the seal.
     COMMAND xattr -cr "$<TARGET_BUNDLE_DIR:xenia-app>"

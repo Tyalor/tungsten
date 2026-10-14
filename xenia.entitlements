@@ -2,6 +2,9 @@
 <!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
 <plist version="1.0">
 <dict>
+	<!-- Release entitlements: hardened runtime with a JIT exception. Debug builds
+	     use xenia-debug.entitlements, which adds get-task-allow so a debugger
+	     can attach; notarization rejects that key, so it must not ship. -->
 	<key>com.apple.security.cs.allow-dyld-environment-variables</key>
 	<true/>
 	<key>com.apple.security.cs.allow-jit</key>
@@ -13,8 +16,6 @@
 	<key>com.apple.security.cs.jit-write-allowlist</key>
 	<false/>
 	<key>com.apple.security.cs.jit-write-allowlist-freeze-late</key>
-	<true/>
-	<key>com.apple.security.get-task-allow</key>
 	<true/>
 </dict>
 </plist>
