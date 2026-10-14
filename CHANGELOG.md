@@ -18,3 +18,10 @@ All changes relative to the upstream Xenia Edge commit this fork tracks.
   and RelWithDebInfo now sign with `xenia.entitlements` (hardened runtime
   plus the JIT exception); Debug signs with `xenia-debug.entitlements`,
   which keeps `get-task-allow` so lldb can attach.
+- **Window: a saved position that is off every display is ignored.** The
+  main window restored its last top-left corner without checking that a
+  display still contains it. A corrupt value or a disconnected external
+  monitor then produced a frame AppKit rejects with
+  `NSInternalInconsistencyException` (XeniOS issue #16, same code lineage),
+  or an unreachable window elsewhere. The position is validated against the
+  connected displays and falls back to the toolkit default.

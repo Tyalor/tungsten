@@ -13,6 +13,7 @@
 #include <wx/persist.h>
 #include <wx/persist/toplevel.h>
 
+#include <climits>
 #include <cstring>
 #include <vector>
 
@@ -113,7 +114,21 @@ static wxPoint ReadInitialFramePositionFromConfig() {
   }
   long x = 0, y = 0;
   if (config->Read(kGeometryKeyX, &x) && config->Read(kGeometryKeyY, &y)) {
-    return wxPoint(int(x), int(y));
+    // The saved point can be off every connected screen: a display that was
+    // unplugged, a corrupt value, or a stale write from before a resolution
+    // change. AppKit aborts on a frame outside the screen bounds, and other
+    // toolkits silently park the window where it can't be reached. Only
+    // honor the position when a display still contains it.
+    if (x < INT_MIN || x > INT_MAX || y < INT_MIN || y > INT_MAX) {
+      return wxDefaultPosition;
+    }
+    const wxPoint saved{int(x), int(y)};
+    if (wxDisplay::GetFromPoint(saved) == wxNOT_FOUND) {
+      XELOGW("Saved window position ({}, {}) is off every display; ignoring",
+             saved.x, saved.y);
+      return wxDefaultPosition;
+    }
+    return saved;
   }
   return wxDefaultPosition;
 }
