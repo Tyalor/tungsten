@@ -1,0 +1,92 @@
+FAIL 99a576cf9 [A64] Keep constant vector operands out of the scratch registers they alias
+FAIL 90d23d7f7 [A64] Decide the 0xE0000000 physical remap on the effective address
+FAIL c974ec0e3 [A64] Mark the HostToGuest thunk explicitly for unwind info
+FAIL 49bc14fa2 [A64] Materialise both operands of MIN/MAX when both are constant
+FAIL f1739d99e [A64] Forget the cached FPCR mode across a native call
+FAIL c221abe1b [Base/POSIX] Extend the file to the mapping length in MappedMemory::Open
+FAIL 91d242e13 [Base/POSIX] Treat kFileAppendData as write intent and drop O_APPEND
+FAIL 3c26fac69 [Base/macOS] Stop building shell command lines in the system helpers
+FAIL 350e4646c [Base/POSIX] Give QueryProtect's out parameters a defined value, and finish the merge
+FAIL 3461295a2 [Base/POSIX] Make the Win32-style release form of DeallocFixed work
+FAIL 9c23a960d [Base/POSIX] Create shared-memory objects owner-only and exclusively
+FAIL dc8872554 [Base/POSIX] Fix ListFiles classification and GetUserFolder's null check
+FAIL 392a98248 [Base/POSIX] Return interrupt time in 100 ns units and stop the uptime overflow
+FAIL 446524177 [Base/POSIX] Handle a non-page-aligned mapping offset
+FAIL 981d31590 [Base/POSIX] Build the thread affinity mask with a 64-bit shift
+FAIL 29c7d5d2e [Base/POSIX] Exit instead of spinning when Terminate races self-termination
+FAIL fbdd375c2 [Base/POSIX] Join a waited-on thread outside the handle's mutex
+FAIL f44c224d9 [Base/POSIX] Give macOS an async-signal-safe suspend park
+FAIL cc476d526 [A64] Do not touch memory for lvrx with a zero byte offset
+FAIL 270c45e77 [Base/POSIX] Handle SIGTRAP so breakpoints and guest traps are reachable
+FAIL e39173729 [A64] Restore FPU FPCR mode in the scalar sequences that depend on it
+FAIL b0414cbeb [A64] Stop replacing the invalid-operation QNaN with the negative one
+FAIL d43fac91f [Base/POSIX] Allocate the suspend pipe only when a thread is actually suspended
+FAIL 1de3fcdde [Base/macOS] Correct the environ accessor and AppleScript escaping
+FAIL 9ec592b88 [A64] Restore FPU FPCR mode in the macro-generated float compares too
+FAIL 4c9efd754 [VFS] Make the host path walk cycle-safe
+FAIL 8e7f84ff8 [Base/POSIX] Make an append-only handle actually append
+FAIL 71ffea819 [A64] Dispatch guest traps by type instead of emitting a bare BRK
+FAIL 3839ac1d0 Patch breakpoints through the code cache, not through the execute view
+FAIL 85e05ca9d [A64] Follow branches in CalculateNextHostInstruction
+FAIL 18bd34a11 [Base/POSIX] Read the thread affinity mask back with a 64-bit shift
+FAIL 6f6544056 [Base/POSIX] Serialise SuspendGate teardown with arming
+FAIL 7a1fdbe7c [Base/POSIX] Make the suspend park level-triggered again
+FAIL bbab180e6 [Base/POSIX] Arm the suspend gate before a create_suspended thread parks
+FAIL 56b63bc8b [Base/POSIX] Take the reservation record and its length in one step
+FAIL c72bcd098 [Base/POSIX] Report the breakpoint's own address for SIGTRAP on x86-64
+FAIL f55335a7f [Base/POSIX] Make an unclaimed SIGTRAP fatal instead of silently continuing
+FAIL 24c44671b [Base/POSIX] Stop Break() from taking SIGTRAP away from the exception handler
+FAIL d45e0fd98 [Base] Classify a literal load as a read, not as stack garbage
+FAIL 291e11ad7 [Base/POSIX] Stop writing general registers from the vector write-back loop
+FAIL 299831c67 [A64] Quiet signalling NaNs before the PACK clamps
+FAIL bc2f386ff [Base/POSIX] Wake WaitMultiple on a signal instead of polling for it
+FAIL 9e624f565 [Base/POSIX] Treat the mapped-file ranges as half-open in DeallocFixed
+FAIL 6a763e35f [CPU] Compare float constants by bits in the compare-merging simplification
+FAIL 6c66fa966 [A64] Flush denormals with four instructions instead of seven
+FAIL 9d5f12670 [A64] Decide the FMA NaN fixup with four inline instructions
+FAIL 818537738 [A64] Shrink the prologue safepoints with immediate compares and near branches
+FAIL d73cfa239 [A64] Fold vperm's byte-order remap into the tables with REV32
+OK   caa641401 [A64] Pair the guest/host return-address slots for stp/ldp
+FAIL 616fb633e [A64] Load the encoded-indirection constants from the backend context
+FAIL b1b9aab4f [A64] Fuse AND with a following compare-against-zero through ANDS
+FAIL 5cdf0dcee [CPU] Forward VEC128 context values inside a block
+OK   ff701c517 [A64] Branch to the epilog directly when the near bound holds
+FAIL 7a141d871 [A64] Feed the FMA and its NaN fixup from allocated sources on FZ hosts
+FAIL 5b15a057a [A64] Move the scalar float NaN and invalid paths to the function tail
+FAIL ab832cb5f [A64] Guard host transitions against an untracked VMX FPCR mode
+FAIL 90aefe81e [A64] Seed the block-entry FPCR mode from a per-edge meet
+FAIL dcf981c08 [A64] Trust the hardware default QNaN for scalar FMA invalid operations
+FAIL 08ef2c74e [A64] Gate the vector FMA fixup's tail branch on the near bound
+FAIL d4dfb8840 [A64] Load the return slots once in the indirect tail call
+FAIL 94f84ae8d [A64] Restore the stackpoint depth from a frame spill instead of a RMW
+FAIL db72c0b7c [A64] Load an indirect-call target straight into w16
+OK   b07a4187d [A64] Fold constant vector shift amounts at compile time
+OK   939b6e400 [A64] Feed SELECT from live ANDS flags
+FAIL 1dd664b3f [CPU] Classify nonfinite operands through one running maximum
+FAIL 8c59d9030 [A64] Gate scalar float binop NaN handling on the result, not the operands
+FAIL e16e9995d [A64] Emit vector merges as zip instead of table permutes
+FAIL 74ba61f4a [x64] Emit btr/bts for single-bit 64-bit AND/OR masks
+FAIL 0338228e6 [x64] SELECT_F64: borrow-mask blend, no MXCSR declaration
+FAIL ccaa671b0 [A64] Gate scalar FMA NaN handling on the result, not the operands
+FAIL b0733ea1c [CPU] Fold the single-precision denormal quirk test into one opcode
+FAIL 93ca50ad0 [x64] Permute: recognize vmrg merges as unpacks, fold constant controls
+FAIL 38e7c5687 [A64] Generalize the NZCV fusion to arbitrary nonzero-conditions
+FAIL d33021858 [x64] Scalar F64 binops: skip the xmm2 staging copy for non-aliased dest
+FAIL 97343ebff [CPU] Make the longjmp repair path testable; add a repair regression test
+FAIL e5170a161 [A64] Store stackpoints as linked records inside guest frames
+FAIL 59d83a39f [A64] Fold the guest-address zero-extend into load/store addressing
+FAIL 8b7608a37 [A64] Track the FPCR entry/return contract precisely
+FAIL 08ea46c50 [A64] Meet FPCR tracker states at conditional-region merges
+FAIL d09f6440c [A64] Gate software denormal flushes on the runtime VSCR.NJ state
+FAIL 77a164cb7 [x64] Keep the MXCSR tracker honest across host transitions
+FAIL 752ddf5f9 [CPU] Fix mcrf: copy the CR field instead of comparing it against zero
+FAIL c4a4239d4 [A64] SELECT_V128 aliased cases as one BIT/BIF; direct register shifts
+FAIL b98a2934f [CPU] Simplify three carry/shift helpers in the PPC frontend
+FAIL 7a771a2db [CPU] Move preempt_requested into the PPCContext padding hole
+FAIL 1c102190d [x64] Vector average and byte packs without scalar loops or host calls
+FAIL 405af1e06 style: clang-format the files touched by this branch
+FAIL 55ead1ed0 [Build] Add XENIA_BUILD_EMULATOR so the PPC tests build headless
+FAIL 885a5697c [A64] Per-guest-function timing from CNTVCT_EL0
+FAIL 28663a527 style: clang-format the files touched by the headless-build commit
+OK   9dfced2f7 [Build] Gate spirv_to_dxil on XENIA_BUILD_EMULATOR
+FAIL 485e53bdb [A64] Actually deliver the profiler's output, and say where it went
