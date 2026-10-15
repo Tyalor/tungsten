@@ -29,6 +29,7 @@
 
 class wxButton;
 class wxChoice;
+class wxStaticText;
 class wxSplitterWindow;
 
 namespace xe {
@@ -105,6 +106,10 @@ class GameListPanel : public wxPanel {
   // Repositions the sash so the pane keeps its share after a resize.
   void ApplySashPosition();
 
+  // Swaps the grid for a message when the library is empty or the filter
+  // matches nothing, so a first launch tells the user what to do next.
+  void UpdateEmptyState();
+
   void OnSearch(wxCommandEvent& event);
   void OnItemActivated(int index);
   void OnSelectionChanged();
@@ -135,6 +140,11 @@ class GameListPanel : public wxPanel {
   wxButton* sort_dir_button_ = nullptr;
   ui::GameGrid* grid_ = nullptr;
   wxPanel* loading_panel_ = nullptr;
+  wxPanel* empty_panel_ = nullptr;
+  wxStaticText* empty_title_ = nullptr;
+  wxStaticText* empty_detail_ = nullptr;
+  wxButton* empty_add_button_ = nullptr;
+  wxButton* empty_open_button_ = nullptr;
   // The pane's share of the width. Kept as a fraction rather than a pixel
   // count so folding it away, or resizing the window while it is folded,
   // cannot leave a width that was right for some other window size. Zero

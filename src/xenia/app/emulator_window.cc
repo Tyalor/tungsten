@@ -542,20 +542,17 @@ EmulatorWindow::EmulatorWindow(Emulator* emulator,
       window_(ui::Window::Create(app_context, kBaseTitle, width, height)),
       imgui_drawer_(
           std::make_unique<ui::ImGuiDrawer>(window_.get(), kZOrderImGui)) {
-  base_title_ = std::string(kBaseTitle) +
+  // The build branch, commit and date live in the About dialog; the title
+  // bar is for the product and the running game.
+  base_title_ = std::string(kBaseTitle)
 #ifdef DEBUG
 #if _NO_DEBUG_HEAP == 1
-                " DEBUG"
+                + " DEBUG"
 #else
-                " CHECKED"
+                + " CHECKED"
 #endif
 #endif
-                " ("
-#ifdef XE_BUILD_IS_PR
-                "PR#" XE_BUILD_PR_NUMBER " - "
-#endif
-                XE_BUILD_BRANCH "@" XE_BUILD_COMMIT_SHORT " on " XE_BUILD_DATE
-                ")";
+      ;
 }
 
 std::unique_ptr<EmulatorWindow> EmulatorWindow::Create(

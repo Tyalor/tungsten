@@ -195,6 +195,50 @@ GameListPanel::GameListPanel(wxWindow* parent, EmulatorWindow* emulator_window)
   }
   grid_->Hide();
 
+  // Empty state: a blank grid on first launch gives no hint that the library
+  // is filled by scanning a folder. Say so, and put the two entry points
+  // right there instead of only in the File menu.
+  empty_panel_ = new wxPanel(list_side_, wxID_ANY);
+  {
+    auto* empty_sizer = new wxBoxSizer(wxVERTICAL);
+    empty_sizer->AddStretchSpacer(1);
+    empty_title_ = new wxStaticText(empty_panel_, wxID_ANY, wxEmptyString,
+                                    wxDefaultPosition, wxDefaultSize,
+                                    wxALIGN_CENTRE_HORIZONTAL);
+    wxFont title_font = empty_title_->GetFont();
+    title_font.Scale(1.6f);
+    title_font.MakeBold();
+    empty_title_->SetFont(title_font);
+    empty_sizer->Add(empty_title_, 0, wxALIGN_CENTER_HORIZONTAL);
+    empty_detail_ = new wxStaticText(empty_panel_, wxID_ANY, wxEmptyString,
+                                     wxDefaultPosition, wxDefaultSize,
+                                     wxALIGN_CENTRE_HORIZONTAL);
+    empty_sizer->Add(empty_detail_, 0, wxALIGN_CENTER_HORIZONTAL | wxTOP,
+                     FromDIP(8));
+    auto* button_row = new wxBoxSizer(wxHORIZONTAL);
+    empty_add_button_ =
+        new wxButton(empty_panel_, wxID_ANY, _("Add Game Folder..."));
+    empty_open_button_ =
+        new wxButton(empty_panel_, wxID_ANY, _("Open a Game..."));
+    button_row->Add(empty_add_button_, 0, wxRIGHT, FromDIP(8));
+    button_row->Add(empty_open_button_, 0);
+    empty_sizer->Add(button_row, 0, wxALIGN_CENTER_HORIZONTAL | wxTOP,
+                     FromDIP(20));
+    empty_sizer->AddStretchSpacer(1);
+    empty_panel_->SetSizer(empty_sizer);
+    empty_add_button_->Bind(wxEVT_BUTTON, [this](wxCommandEvent&) {
+      if (emulator_window_) {
+        emulator_window_->FileAddGames();
+      }
+    });
+    empty_open_button_->Bind(wxEVT_BUTTON, [this](wxCommandEvent&) {
+      if (emulator_window_) {
+        emulator_window_->FileOpen();
+      }
+    });
+  }
+  empty_panel_->Hide();
+
   auto* search_row = new wxBoxSizer(wxHORIZONTAL);
   search_row->Add(search_, wxSizerFlags(1).Expand());
   search_row->Add(sort_choice_,
@@ -206,6 +250,8 @@ GameListPanel::GameListPanel(wxWindow* parent, EmulatorWindow* emulator_window)
   side_sizer->Add(search_row, wxSizerFlags().Expand().Border(wxALL, 4));
   side_sizer->Add(loading_panel_, wxSizerFlags(1).Expand().Border(
                                       wxLEFT | wxRIGHT | wxBOTTOM, 4));
+  side_sizer->Add(empty_panel_, wxSizerFlags(1).Expand().Border(
+                                    wxLEFT | wxRIGHT | wxBOTTOM, 4));
   side_sizer->Add(
       grid_, wxSizerFlags(1).Expand().Border(wxLEFT | wxRIGHT | wxBOTTOM, 4));
   list_side_->SetSizer(side_sizer);
@@ -247,8 +293,9 @@ void GameListPanel::Reload() {
     if (loading_panel_ && loading_panel_->IsShown()) {
       loading_panel_->Hide();
       grid_->Show();
-      list_side_->Layout();
     }
+    UpdateEmptyState();
+    list_side_->Layout();
   };
 
   if (!emulator_window_) {
@@ -285,6 +332,38 @@ void GameListPanel::Reload() {
   Repopulate();
   UpdateSearchPlaceholder();
   reveal_list();
+}
+
+void GameListPanel::UpdateEmptyState() {
+  if (!empty_panel_ || !grid_ ||
+      (loading_panel_ && loading_panel_->IsShown())) {
+    return;
+  }
+  bool show_empty = false;
+  if (entries_.empty()) {
+    show_empty = true;
+    empty_title_->SetLabel(_("Your library is empty"));
+    empty_detail_->SetLabel(
+        _("Add a folder containing your own Xbox 360 game dumps\n"
+          "(ISO, GoD, XEX or XBLA), or drop game files onto this window."));
+    empty_add_button_->Show();
+    empty_open_button_->Show();
+  } else if (visible_indices_.empty()) {
+    show_empty = true;
+    empty_title_->SetLabel(_("No games match"));
+    empty_detail_->SetLabel(wxString::Format(
+        _("Nothing in your library matches \"%s\"."), search_->GetValue()));
+    empty_add_button_->Hide();
+    empty_open_button_->Hide();
+  }
+  if (show_empty) {
+    empty_panel_->Layout();
+  }
+  if (empty_panel_->IsShown() != show_empty) {
+    empty_panel_->Show(show_empty);
+    grid_->Show(!show_empty);
+    list_side_->Layout();
+  }
 }
 
 void GameListPanel::UpdateSearchPlaceholder() {
@@ -784,6 +863,7 @@ void GameListPanel::Repopulate() {
     items.push_back(std::move(item));
   }
   grid_->SetItems(std::move(items));
+  UpdateEmptyState();
 
   // Sorting and filtering rebuild every card, so re-find what was selected;
   // the info pane would otherwise blank on each keystroke. Restoring it is
